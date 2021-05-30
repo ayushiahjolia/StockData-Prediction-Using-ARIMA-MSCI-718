@@ -1,0 +1,94 @@
+---
+title: "STOCK DATA PRESENTATION"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### CVS HEALTH STOCK PRICE
+
+```{r stock_1}
+library(plotly)
+library(quantmod)
+
+getSymbols("CVS",src='yahoo', from = "2018-01-01", to = "2020-12-31")
+
+df <- data.frame(Date=index(CVS),coredata(CVS))
+df <- tail(df,1000)
+
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~CVS.Open, close = ~CVS.Close,
+          high = ~CVS.High, low = ~CVS.Low) %>%
+  layout(title="CandleStick Chart")
+
+p
+```
+
+### BERKSHIRE HATHWAY STOCK PRICE
+
+```{r stock_2}
+library(plotly)
+library(quantmod)
+
+# Create BRK.A object
+BRK.A <- getSymbols("BRK-A", auto.assign = FALSE, from = "2018-01-01", to = "2020-12-31")
+
+# Create col_names object with the column names of BRK.A
+col_names <- colnames(BRK.A)
+
+# Set BRK.A column names to syntactically valid names
+colnames(BRK.A) <- make.names(col_names)
+
+df <- data.frame(Date=index(BRK.A),coredata(BRK.A))
+df <- tail(df,1000)
+
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~BRK.A.Open, close = ~BRK.A.Close,
+          high = ~BRK.A.High, low = ~BRK.A.Low) %>%
+  layout(title="CandleStick Chart")
+
+p
+```
+
+Column 
+-----------------------------------------------------------------------
+
+### DECOMPOSITION PLOT FOR CVS HEALTH STOCK
+
+```{r decompsition_plot_1}
+library('tidyverse')
+library('forecast')
+library('ggplot2')
+library('xts')
+library('urca')
+library('tseries')
+library('lmtest')
+library("TTR")
+
+CVSH <- read.csv("C:/Users/DEEP/Desktop/WATERLOO/MSCI 718/project/CVS_final.csv")
+
+obj_cvsh <- ts(CVSH$Close, start = c(2018,01,03), frequency = 251)
+
+plot(decompose(obj_cvsh))
+```
+
+### DECOMPOSITION PLOT FOR BERKSHIRE HATHWAY
+
+```{r decomposition_plot_2}
+BKHW <- read.csv("C:/Users/DEEP/Desktop/WATERLOO/MSCI 718/project/bhw.csv")
+
+obj_bkhw <- ts(BKHW$Close, start = c(2018,01,02), frequency = 251)
+plot(decompose(obj_bkhw))
+
+```
+
